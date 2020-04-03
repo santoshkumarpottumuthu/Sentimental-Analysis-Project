@@ -22,30 +22,31 @@ num_of_tweets = int(input("Enter the Number of tweets to be analysed:"))
 
 #tweets = api.user_timeline(search_word,num_of_tweets,language = "english")
 #tweets = tweepy.Cursor(api.search , q=search_word , language ="English").items()num_of_tweets
-#displayiong the last 5 tweets
+
 tweets = tweepy.Cursor(api.search , q=search_word , language ="English").items(num_of_tweets)
 for tweet in tweets:
   analysis = TextBlob(tweet.text)
-  polarity = analysis.sentiment.polarity
+  polarity = analysis.sentiment.polarity  #At line
   #Creating the Data Frame of Tweets
   df = pd.DataFrame([tweet.text for tweet in tweets] , columns= ['Tweets'])
   #print(analysis)
   print(df.head())
 
 #cleaning the tweets:
+#cleaning all the unwanted stuff like hashtags,mentions,urls,etcc....by using re module we will do this.
 def clean_tweet(txt):
   txt = re.sub('@[A-Za-z0–9]+', '', txt) #Removing @mentions
   txt = re.sub('#', '', txt) # Removing '#' hash tag
   txt = re.sub('RT[\s]+', '', txt) # Removing RT
   txt = re.sub('https?:\/\/\S+', '', txt) # Removing hyperlink
   return txt
-
+#storing cleaned tweets by overiding the old one's by cleaning them.
 df['Tweets'] = df['Tweets'].apply(clean_tweet)
 
-#printing the cleaned tweets:
+#printing the cleaned tweets from the data frame. 
 print(df.head())
 
-#creating function to get the subjectivity
+#creating function to get the subjectivity.
 def subjectivity(txt):
     return TextBlob(txt).sentiment.subjectivity
 #creating a function to get the polarity
@@ -72,7 +73,7 @@ df['Analysis'] = df['polarity'].apply(getAnalysis)
 #printing positive tweets
 print('Printing positive tweets:\n')
 j=1
-sortedD_Frame = df.sort_values(by=['polarity']) #Sort the tweets
+sortedD_Frame = df.sort_values(by=['polarity']) #Sorting the tweets
 for i in range(0, sortedD_Frame.shape[0] ):
   if( sortedD_Frame['Analysis'][i] == 'Positive'):
     print(str(j) + ') '+ sortedD_Frame['Tweets'][i])
@@ -88,7 +89,7 @@ for i in range(0, sortedD_Frame.shape[0] ):
     print(str(j) + ') '+sortedD_Frame['Tweets'][i])
     print()
     j=j+1
-# Printing neutral tweets
+# Printing neutral tweets :
 print('Printing negative tweets:\n')
 j=1
 sortedDF = df.sort_values(by=['polarity'],ascending=False) #Sort the tweets
